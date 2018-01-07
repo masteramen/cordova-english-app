@@ -1,0 +1,21 @@
+{
+  "dev": {
+
+       # "config-file": "http:192.168.1.126:8080/www/chcp.json",
+	"auto-download": {
+	    "enabled":true 
+	},
+	"auto-install": {
+	    "enabled":true 
+	},
+	"native-interface": {
+	    "version": 5
+	}
+  },
+  "production": {
+    "config-file": "https://company_server.com/mobile/www/chcp.json"
+  },
+  "QA": {
+    "config-file": "https://test.company_server.com/mobile/www/chcp.json"
+  }
+}

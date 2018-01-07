@@ -1,0 +1,10 @@
+{
+  "name": "UpEnglish",
+  "s3bucket": "",
+  "s3prefix": "",
+  "s3region": "",
+  "ios_identifier": "learn.upenglish.com",
+  "android_identifier": "learn.upenglish.com",
+  "update": "now",
+//  "content_url": "http://192.168.1.126:8080/www"
+}

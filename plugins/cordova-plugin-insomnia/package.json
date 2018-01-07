@@ -1,0 +1,66 @@
+{
+  "_from": "git+https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+  "_id": "cordova-plugin-insomnia@4.3.0",
+  "_inBundle": false,
+  "_integrity": "sha1-bzLTPxzn9g+cwsQRlRLT7lrnItU=",
+  "_location": "/cordova-plugin-insomnia",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+    "rawSpec": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+    "saveSpec": "git+https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+    "fetchSpec": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+    "gitCommittish": "master"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git#8d2c3b01fc0c11d9bc36bc1b5f9a141bd097f908",
+  "_spec": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
+  "_where": "/Users/alexwang/Documents/dev/cordova-app",
+  "author": {
+    "name": "Eddy Verbruggen",
+    "email": "eddyverbruggen@gmail.com",
+    "url": "https://github.com/EddyVerbruggen"
+  },
+  "bugs": {
+    "url": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-insomnia",
+    "platforms": [
+      "ios",
+      "wp8",
+      "windows",
+      "android",
+      "firefoxos"
+    ]
+  },
+  "deprecated": false,
+  "description": "Prevent the screen of the mobile device from falling asleep.",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "homepage": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-wp8",
+    "cordova-windows",
+    "cordova-android",
+    "cordova-firefoxos"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-insomnia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git"
+  },
+  "version": "4.3.0"
+}

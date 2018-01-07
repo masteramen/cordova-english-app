@@ -1,0 +1,49 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-insomnia": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-remotecommand": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-hot-code-push-plugin": {
+            "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-background-mode": {
+            "PACKAGE_NAME": "com.cordova.app"
+        }
+    },
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.cordova.app"
+        }
+    }
+}
