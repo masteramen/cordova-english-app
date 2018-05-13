@@ -1,0 +1,176 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "1x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "1x",
+      "width-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x",
+      "width-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x",
+      "width-class" : "compact"
+    },
+    {
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina-1.png",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "1x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "2x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina-2.png",
+      "height-class" : "compact",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "1x",
+      "width-class" : "compact"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina-3.png",
+      "width-class" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina-4.png",
+      "width-class" : "compact",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "iphone",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "iphone",
+      "filename" : "icon_ipad_ios6_retina-5.png",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "ipad",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "icon_ipad_ios6_retina-6.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "ipad",
+      "scale" : "1x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "ipad",
+      "scale" : "2x",
+      "height-class" : "compact"
+    },
+    {
+      "idiom" : "ipad",
+      "scale" : "1x",
+      "width-class" : "compact"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "iphone5_ios7.jpg",
+      "width-class" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "ipad",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "ipad",
+      "width-class" : "compact",
+      "height-class" : "compact",
+      "scale" : "2x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}

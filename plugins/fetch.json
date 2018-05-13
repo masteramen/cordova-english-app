@@ -49,14 +49,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-background-mode": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-background-mode"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-device": {
         "source": {
             "type": "registry",
@@ -97,10 +89,75 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-hot-code-push-plugin": {
+    "cordova-plugin-admobpro": {
         "source": {
             "type": "registry",
-            "id": "cordova-hot-code-push-plugin"
+            "id": "cordova-plugin-admobpro"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-extension": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-extension"
+        },
+        "is_top_level": false,
+        "variables": {}
+    },
+    "cordova-plugin-broadcaster": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-broadcaster@3.0.1"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-splashscreen": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-splashscreen@5.0.2"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-network-information": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-network-information"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "com.danielsogl.cordova.backgroundaudio": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-background-audio"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-app-version": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-app-version"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-streaming-media": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thessler27/cordova-plugin-streaming-media.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-add-swift-support": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-add-swift-support"
         },
         "is_top_level": true,
         "variables": {}

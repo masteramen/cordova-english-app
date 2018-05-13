@@ -30,6 +30,7 @@ static RemoteControls *remoteControls = nil;
     NSString *cover = [command.arguments objectAtIndex:3];
     NSNumber *duration = [command.arguments objectAtIndex:4];
     NSNumber *elapsed = [command.arguments objectAtIndex:5];
+    NSNumber *rate = [command.arguments objectAtIndex:6];
 
     // async cover loading
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -80,7 +81,8 @@ static RemoteControls *remoteControls = nil;
                         artwork, MPMediaItemPropertyArtwork,
                         duration, MPMediaItemPropertyPlaybackDuration,
                         elapsed, MPNowPlayingInfoPropertyElapsedPlaybackTime,
-                        [NSNumber numberWithInt:1], MPNowPlayingInfoPropertyPlaybackRate, nil];
+                         rate, MPNowPlayingInfoPropertyPlaybackRate, nil];
+                    //[NSNumber numberWithInt:0], MPNowPlayingInfoPropertyPlaybackRate, nil];
                 }
             });
         }
@@ -150,4 +152,5 @@ static RemoteControls *remoteControls = nil;
 }
 
 @end
+
 

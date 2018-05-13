@@ -937,6 +937,52 @@
     }
 }
 
+
+- (void) pluginInitialize
+{
+    // 监听事件中断通知 begin 2018-02-16
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioSessionInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
+    // 监听事件中断通知 end 2018-02-16
+}
+// 监听中断通知调用的方法
+- (void)handleAudioSessionInterruption:(NSNotification*)notification {
+    
+    NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
+    NSNumber *interruptionOption = [[notification userInfo] objectForKey:AVAudioSessionInterruptionOptionKey];
+    
+    switch (interruptionType.unsignedIntegerValue) {
+        case AVAudioSessionInterruptionTypeBegan:{
+            // • Audio has stopped, already inactive
+            // • Change state of UI, etc., to reflect non-playing state
+             NSLog(@"被打断");
+        } break;
+        case AVAudioSessionInterruptionTypeEnded:{
+            // • Make session active
+            // • Update user interface
+            // • AVAudioSessionInterruptionOptionShouldResume option
+             NSLog(@"End打断");
+            if (interruptionOption.unsignedIntegerValue == AVAudioSessionInterruptionOptionShouldResume) {
+                // Here you should continue playback.
+                NSString* mediaId = self.currMediaId;
+                CDVAudioFile* audioFile = [[self soundCache] objectForKey:self.currMediaId];
+                if ((audioFile != nil) && ((audioFile.player != nil) || (avPlayer != nil))) {
+                    NSLog(@"Paused playing audio sample '%@'", audioFile.resourcePath);
+                    if (audioFile.player != nil) {
+                        [audioFile.player play];
+                    } else if (avPlayer != nil) {
+                        [avPlayer play];
+                    }
+                    
+                    [self onStatus:MEDIA_STATE mediaId:mediaId param:@(MEDIA_RUNNING)];
+                }
+            }
+        } break;
+        default:
+            break;
+    }
+}
+
 @end
 
 @implementation CDVAudioFile

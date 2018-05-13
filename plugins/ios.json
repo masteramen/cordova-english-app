@@ -7,44 +7,65 @@
         "files": {}
     },
     "installed_plugins": {
+        "com.danielsogl.cordova.backgroundaudio": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
         "com.rd11.remote-controls": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
-        "cordova-hot-code-push-plugin": {
-            "PACKAGE_NAME": "com.cordova.app"
+        "cordova-plugin-add-swift-support": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
-        "cordova-plugin-background-mode": {
-            "PACKAGE_NAME": "com.cordova.app"
+        "cordova-plugin-admobpro": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-broadcaster": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-insomnia": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-media": {
             "MICROPHONE_USAGE_DESCRIPTION": " ",
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-remotecommand": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-streaming-media": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         }
     },
     "dependent_plugins": {
+        "cordova-plugin-extension": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
         "cordova-plugin-compat": {
-            "PACKAGE_NAME": "com.cordova.app"
+            "PACKAGE_NAME": "info.jfox.learnapp"
         }
     }
 }

@@ -34,16 +34,37 @@
         "cordova-plugin-remotecommand": {
             "PACKAGE_NAME": "com.cordova.app"
         },
-        "cordova-hot-code-push-plugin": {
-            "PACKAGE_NAME": "com.cordova.app"
+        "cordova-plugin-admobpro": {
+            "PACKAGE_NAME": "com.cordova.app2"
         },
-        "cordova-plugin-background-mode": {
-            "PACKAGE_NAME": "com.cordova.app"
+        "cordova-plugin-broadcaster": {
+            "PACKAGE_NAME": "com.cordova.app2"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.cordova.app2"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.cordova.app2"
+        },
+        "com.danielsogl.cordova.backgroundaudio": {
+            "PACKAGE_NAME": "com.cordova.app2"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-streaming-media": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
+        },
+        "cordova-plugin-add-swift-support": {
+            "PACKAGE_NAME": "info.jfox.learnapp"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-compat": {
             "PACKAGE_NAME": "com.cordova.app"
+        },
+        "cordova-plugin-extension": {
+            "PACKAGE_NAME": "com.cordova.app2"
         }
     }
 }
