@@ -3,6 +3,15 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "学英语听新闻-Swift.h"
+#import "CDVFile.h"
+#import "HWWeakTimer.h"
+#import "VIMediaCache.h"
+#import "VIMediaDownloader.h"
+#import "VIMediaCacheWorker.h"
+#define DOCUMENTS_SCHEME_PREFIX @"documents://"
+#define HTTP_SCHEME_PREFIX @"http://"
+#define HTTPS_SCHEME_PREFIX @"https://"
+#define CDVFILE_PREFIX @"cdvfile://"
 //#import "JHRotatoUtil.h"
 @interface StreamingMedia()
 	- (void)parseOptions:(NSDictionary *) options type:(NSString *) type;
@@ -10,21 +19,28 @@
 	- (void)setBackgroundColor:(NSString *)color;
 	- (void)setImage:(NSString*)imagePath withScaleType:(NSString*)imageScaleType;
 	- (UIImage*)getImage: (NSString *)imageName;
-	- (void)startPlayer:(NSString*)uri;
+- (void)startPlayer:(NSString*)uri withSrt:(NSString*) srt;
 	- (void)moviePlayBackDidFinish:(NSNotification*)notification;
 	- (void)cleanup;
 @property UIInterfaceOrientation orientation;
+@property (nonatomic, assign) BOOL             isUserPlay;
+@property (nonatomic, weak) NSTimer *timer;
+
+@property (nonatomic, strong) UIScreen *extScreen;
+@property (nonatomic, strong) UIWindow *extWindow;
+@property (nonatomic, strong) NSArray *availableModes;
+@property (nonatomic, strong) VIResourceLoaderManager *resourceLoaderManager;
 @end
 
 @implementation StreamingMedia {
-	NSString* callbackId;
+    NSString* callbackId;
 	AVPlayerViewController *moviePlayer;
+    UIView *superView;
 	BOOL shouldAutoClose;
 	UIColor *backgroundColor;
 	UIImageView *imageView;
     BOOL initFullscreen;
 }
-
 NSString * const TYPE_VIDEO = @"VIDEO";
 NSString * const TYPE_AUDIO = @"AUDIO";
 NSString * const DEFAULT_IMAGE_SCALE = @"center";
@@ -54,8 +70,7 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 		shouldAutoClose = YES;
 	}
 	if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"bgColor"]) {
-		[self setBackgroundColor:[options objectForKey:@"bgColor"]];
-	} else {
+		[self setBackgroundColor:[options objectForKey:@"bgColor"]];    	} else {
 		backgroundColor = [UIColor blackColor];
 	}
 
@@ -91,17 +106,34 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 
 -(void)play:(CDVInvokedUrlCommand *) command type:(NSString *) type {
 	callbackId = command.callbackId;
-	NSString *mediaUrl  = [command.arguments objectAtIndex:0];
+    NSString *mediaUrl  = [command.arguments objectAtIndex:0];
+
 	[self parseOptions:[command.arguments objectAtIndex:1] type:type];
 
-	[self startPlayer:mediaUrl];
+    NSString *srtUrl  = nil;
+    /*
+    NSLog(@"%lu", [command.arguments count]);
+    if([command.arguments count]>2){
+        srtUrl =[command.arguments objectAtIndex:2];
+    }
+     */
+   NSDictionary *options =  [command.arguments objectAtIndex:1];
+    if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"srt"]) {
+        srtUrl=[options objectForKey:@"srt"];
+    }
+    _isUserPlay  = YES;
+
+    [self startPlayer:mediaUrl withSrt:srtUrl];
 }
 
 -(void)stop:(CDVInvokedUrlCommand *) command type:(NSString *) type {
     callbackId = command.callbackId;
     if (moviePlayer.player) {
         [moviePlayer.player pause];
+        
     }
+    _isUserPlay  = NO;
+
 }
 
 -(void)playVideo:(CDVInvokedUrlCommand *) command {
@@ -191,12 +223,106 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 
 	[imageView setImage:[self getImage:imagePath]];
 }
-
--(void)startPlayer:(NSString*)uri {
+- (NSURL*)urlForPlaying:(NSString*)resourcePath
+{
+    NSURL* resourceURL = nil;
+    NSString* filePath = nil;
     
-	NSURL *url             =  [NSURL URLWithString:uri];
-    AVPlayer *movie        =  [AVPlayer playerWithURL:url];
-	moviePlayer            =  [[AVPlayerViewController alloc] init];
+    // first try to find HTTP:// or Documents:// resources
+    
+    if ([resourcePath hasPrefix:HTTP_SCHEME_PREFIX] || [resourcePath hasPrefix:HTTPS_SCHEME_PREFIX]) {
+        // if it is a http url, use it
+        NSLog(@"Will use resource '%@' from the Internet.", resourcePath);
+        resourceURL = [NSURL URLWithString:resourcePath];
+    } else if ([resourcePath hasPrefix:DOCUMENTS_SCHEME_PREFIX]) {
+        NSString* docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        filePath = [resourcePath stringByReplacingOccurrencesOfString:DOCUMENTS_SCHEME_PREFIX withString:[NSString stringWithFormat:@"%@/", docsPath]];
+        NSLog(@"Will use resource '%@' from the documents folder with path = %@", resourcePath, filePath);
+    } else if ([resourcePath hasPrefix:CDVFILE_PREFIX]) {
+        CDVFile *filePlugin = [self.commandDelegate getCommandInstance:@"File"];
+        CDVFilesystemURL *url = [CDVFilesystemURL fileSystemURLWithString:resourcePath];
+        filePath = [filePlugin filesystemPathForURL:url];
+        if (filePath == nil) {
+            resourceURL = [NSURL URLWithString:resourcePath];
+        }
+    } else {
+        // attempt to find file path in www directory or LocalFileSystem.TEMPORARY directory
+        filePath = [self.commandDelegate pathForResource:resourcePath];
+        if (filePath == nil) {
+            // see if this exists in the documents/temp directory from a previous recording
+            NSString* testPath = [NSString stringWithFormat:@"%@/%@", [NSTemporaryDirectory()stringByStandardizingPath], resourcePath];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:testPath]) {
+                // inefficient as existence will be checked again below but only way to determine if file exists from previous recording
+                filePath = testPath;
+                NSLog(@"Will attempt to use file resource from LocalFileSystem.TEMPORARY directory");
+            } else {
+                // attempt to use path provided
+                filePath = resourcePath;
+                NSLog(@"Will attempt to use file resource '%@'", filePath);
+            }
+        } else {
+            NSLog(@"Found resource '%@' in the web folder.", filePath);
+        }
+    }
+    // if the resourcePath resolved to a file path, check that file exists
+    if (filePath != nil) {
+        // create resourceURL
+        resourceURL = [NSURL fileURLWithPath:filePath];
+        // try to access file
+        NSFileManager* fMgr = [NSFileManager defaultManager];
+        if (![fMgr fileExistsAtPath:filePath]) {
+            resourceURL = nil;
+            NSLog(@"Unknown resource '%@'", resourcePath);
+        }
+    }
+    
+    return resourceURL;
+}
+
+#pragma mark - APP活动通知
+/*- (void)appDidEnterBackground:(NSNotification *)note{
+    //将要挂起，停止播放
+   [moviePlayer.player play];
+}*/
+- (void)appDidEnterPlayground:(NSNotification *)note{
+    //继续播放
+    if (_isUserPlay) {
+        [moviePlayer.player play];
+    }
+}
+-(void)addSrt:(CDVInvokedUrlCommand *) command {
+    callbackId = command.callbackId;
+    
+    [self parseOptions:[command.arguments objectAtIndex:1] type:TYPE_VIDEO];
+    
+    NSString *srtUrl  = nil;
+
+    NSDictionary *options =  [command.arguments objectAtIndex:1];
+    if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"srt"]) {
+        srtUrl=[options objectForKey:@"srt"];
+    }
+    NSURL *subtitleUrl      =   [self urlForPlaying:srtUrl];
+
+    if(subtitleUrl!=nil){
+        [moviePlayer addSubtitlessWithFile:subtitleUrl];
+    }
+    
+}
+-(void)startPlayer:(NSString*)uri withSrt:(NSString*)srt {
+    
+	//NSURL *url             =  [NSURL URLWithString:uri];
+    //
+    NSURL *url             =   [self urlForPlaying:uri];
+    VIResourceLoaderManager *resourceLoaderManager = [VIResourceLoaderManager new];
+    self.resourceLoaderManager = resourceLoaderManager;
+    AVPlayerItem *playerItem = [self.resourceLoaderManager playerItemWithURL:url];
+    AVPlayer *movie = [AVPlayer playerWithPlayerItem:playerItem];
+    //AVPlayer *movie        =  [AVPlayer playerWithURL:url];
+    //BOOL isFirst = YES;
+	//if(moviePlayer==nil)
+        moviePlayer            =  [[AVPlayerViewController alloc] init];
+    //else isFirst = NO;
+    
     [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
     
@@ -204,40 +330,89 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
     [moviePlayer setPlayer:movie];
     [moviePlayer setShowsPlaybackControls:YES];
     if(@available(iOS 11.0, *)) { [moviePlayer setEntersFullScreenWhenPlaybackBegins:YES]; }
+
+        //present modally so we get a close button
     
 
-     
-    //present modally so we get a close button
+    [self.webView.superview addSubview:moviePlayer.view];
+    [self.webView.superview bringSubviewToFront:self.webView];
+    
     [self.viewController presentViewController:moviePlayer animated:YES completion:^(void){
         //let's start this bitch.
         [moviePlayer.player play];
         
         //airplay only can see when there is a air play
-        CGRect rect = [[UIScreen mainScreen] bounds];
-        CGSize size = rect.size;
+        //CGRect rect = [[UIScreen mainScreen] bounds];
+        //CGSize size = rect.size;
         
-        MPVolumeView *volume = [[MPVolumeView alloc] initWithFrame:CGRectMake(0,100, 50, 50)];
-        volume.showsVolumeSlider = NO;
+        //MPVolumeView *volume = [[MPVolumeView alloc] initWithFrame:CGRectMake(0,100, 50, 50)];
+        //volume.showsVolumeSlider = NO;
         //volume.showsRouteButton = TRUE;
         //[volume sizeToFit];
-        [moviePlayer.view addSubview:volume];
-        
+        //[moviePlayer.view addSubview:volume];
+/*
+        NSTimer *mtimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
+            NSLog(@"timer");
+            if (moviePlayer.player.rate == 0 &&
+                (moviePlayer.isBeingDismissed || moviePlayer.nextResponder == nil)) {
+                // Handle user Done button click and invalidate timer
+                 NSLog(@" invalidate timer");
+                [mtimer invalidate];
+            }
+            //想干啥坏事写在这里面
+  
+        }];
+        [[NSRunLoop currentRunLoop] addTimer:mtimer forMode:UITrackingRunLoopMode];
 
+        [mtimer fire];
+        //[mtimer fired];
+ */
+        _timer = [HWWeakTimer scheduledTimerWithTimeInterval:1.0f block:^(id userInfo) {
+            NSLog(@"%@", userInfo);
+            if (moviePlayer.player.rate == 0 &&
+                (moviePlayer.isBeingDismissed || moviePlayer.nextResponder == nil)) {
+                // Handle user Done button click and invalidate timer
+                NSLog(@" invalidate timer");
+                 [_timer invalidate];
+                
+                NSDictionary *dict =[[NSDictionary alloc]initWithObjectsAndKeys:@"Done",AVPlayerItemFailedToPlayToEndTimeErrorKey,nil];
+                
+                //创建通知
+                
+                NSNotification *notification =[NSNotification notificationWithName:AVPlayerItemFailedToPlayToEndTimeNotification object:[moviePlayer.player currentItem] userInfo:dict];
+                
+                //通过通知中心发送通知
+                
+                [[NSNotificationCenter defaultCenter] postNotification:notification];
+                
+            }
+        } userInfo:@"Fire" repeats:YES];
+        [_timer fire];
+
+
+        
+        NSURL *subtitleUrl      =   [self urlForPlaying:srt];
+        
+        if(subtitleUrl!=nil){
+            // NSURL *subtitleURL   =  [NSURL fileURLWithPath:subtitleFile];
+            //[moviePlayer addSubtitles];
+            // [moviePlayer addSubtitles:self file:@"trailer_720p"];
+            
+            [moviePlayer addSubtitlessWithFile:subtitleUrl];
+            //[moviePlayer addSubtitless:@"trailer_720p" ];
+            
+            //[moviePlayer open: subtitleURL];
+            //[[moviePlayer addSubtitles].self open:subtitleURL];
+        }
         
     }];
+    
+     
 
-    NSString *subtitleFile = [[NSBundle mainBundle] pathForResource:@"trailer_720p" ofType:@"srt"];
-    if(subtitleFile!=nil){
-       // NSURL *subtitleURL   =  [NSURL fileURLWithPath:subtitleFile];
-        //[moviePlayer addSubtitles];
-       // [moviePlayer addSubtitles:self file:@"trailer_720p"];
 
-        [moviePlayer addSubtitlessWithFile:subtitleFile ];
-        //[moviePlayer addSubtitless:@"trailer_720p" ];
+    //NSString *subtitleFile = [[NSBundle mainBundle] pathForResource:@"trailer_720p" ofType:@"srt"];
+    
 
-        //[moviePlayer open: subtitleURL];
-        //[[moviePlayer addSubtitles].self open:subtitleURL];
-    }
 // [JHRotatoUtil forceOrientation: UIInterfaceOrientationLandscapeRight];
   //  [moviePlayer open];
     //moviePlayer.addSubtitles().open(file: subtitleURL)
@@ -276,12 +451,29 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 												 name:UIDeviceOrientationDidChangeNotification
 											   object:nil];
     
-
+    // app进入前台
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appDidEnterPlayground:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(screenDidChange:)
+                                                 name:UIScreenDidConnectNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(screenDidChange:)
+                                                 name:UIScreenDidDisconnectNotification
+                                               object:nil];
+    
 }
 
 - (void) moviePlayBackDidFinish:(NSNotification*)notification {
-    NSLog(@"Playback did finish with auto close being %d, and error message being %@", shouldAutoClose, notification.userInfo);
+    NSLog(@"Playbacz zk did finish with auto close being %d, and error message being %@", shouldAutoClose, notification.userInfo);
 
+    [_timer invalidate];
+    
 	NSDictionary *notificationUserInfo = [notification userInfo];
 	NSNumber *errorValue = [notificationUserInfo objectForKey:AVPlayerItemFailedToPlayToEndTimeErrorKey];
 	NSString *errorMsg;
@@ -290,21 +482,21 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 		if (mediaPlayerError) {
 			errorMsg = [mediaPlayerError localizedDescription];
 		} else {
-			errorMsg = @"Unknown error.";
+            errorMsg =  [NSString stringWithFormat:@"%@ Unknown error.", errorValue] ;
 		}
 		NSLog(@"Playback failed: %@", errorMsg);
 	}
 
-	if (shouldAutoClose || [errorMsg length] != 0) {
+	//if (shouldAutoClose || [errorMsg length] != 0) {
 		[self cleanup];
-		CDVPluginResult* pluginResult;
-		if ([errorMsg length] != 0) {
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMsg];
-		} else {
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
-		}
-		[self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
-	}
+	//}
+    CDVPluginResult* pluginResult;
+    if ([errorMsg length] != 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMsg];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
 - (void)cleanup {
@@ -330,10 +522,109 @@ static NSString * const VIDEO_CONTROLLER_CLASS_NAME_IOS8 = @"AVFullScreenViewCon
 									  name:UIDeviceOrientationDidChangeNotification
 									object:nil];
 
+    // remove app进入前台
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIScreenDidConnectNotification
+                                                  object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIScreenDidDisconnectNotification
+                                                  object:nil];
+    
 	if (moviePlayer) {
         [moviePlayer.player pause];
         [moviePlayer dismissViewControllerAnimated:YES completion:nil];
 		moviePlayer = nil;
 	}
 }
+
+- (void)screenDidChange:(NSNotification *)notification
+{
+    if(TRUE)return;
+    NSArray            *screens;
+    UIScreen        *aScreen;
+    UIScreenMode    *mode;
+    
+    // 1.
+    
+    // Log the current screens and display modes
+    screens = [UIScreen screens];
+
+    
+    uint32_t screenNum = 1;
+    for (aScreen in screens) {
+        NSArray *displayModes;
+        displayModes = [aScreen availableModes];
+        screenNum++;
+    }
+    
+    NSUInteger screenCount = [screens count];
+    
+    if (screenCount > 1) {
+        // 2.
+        
+        // Select first external screen
+        self.extScreen = screens[1];
+        
+        self.availableModes = [self.extScreen availableModes];
+        
+        
+        
+        NSInteger selectedRow = 0;
+        
+        self.extScreen.currentMode = (self.availableModes)[selectedRow];
+        
+        if (self.extWindow == nil || !CGRectEqualToRect(self.extWindow.bounds, [self.extScreen bounds])) {
+            // Size of window has actually changed
+            
+            // 4.
+            self.extWindow = [[UIWindow alloc] initWithFrame:[self.extScreen bounds]];
+            
+            // 5.
+            self.extWindow.screen = self.extScreen;
+            
+            UIView *view = [[UIView alloc] initWithFrame:[self.extWindow frame]];
+            view.backgroundColor = [UIColor whiteColor];
+            //[view addSubview:moviePlayer.view];
+            superView = moviePlayer.view.superview;
+            
+           // [self.extWindow addSubview:view];
+            [self.extWindow addSubview:moviePlayer.view];
+
+            // 6.
+            
+            // 7.
+            [self.extWindow makeKeyAndVisible];
+            
+            // Inform delegate that the external window has been created.
+            //
+            // NOTE: we ensure that the external window is sent to the delegate before
+            // the preso mode is sent.
+            
+            
+            // Enable preso mode option
+            self.extWindow.hidden = NO;
+
+        }
+        
+        
+
+    }
+    else {
+        // Release external screen and window
+        [superView addSubview:moviePlayer.view];
+        self.extScreen = nil;
+        
+        self.extWindow = nil;
+        self.availableModes = nil;
+
+
+    }
+}
+
+
 @end

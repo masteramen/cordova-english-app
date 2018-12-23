@@ -36,6 +36,8 @@
 				<param name="ios-package" value="StreamingMedia" />
 			</feature>
 		</config-file>
+		<header-file src="src/ios/HWWeakTimer.h" />
+		<source-file src="src/ios/HWWeakTimer.m" />
 		<header-file src="src/ios/StreamingMedia.h" />
 		<source-file src="src/ios/StreamingMedia.m" />
 		<source-file src="src/ios/Subtitles.swift" />

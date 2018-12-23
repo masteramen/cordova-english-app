@@ -1,0 +1,10 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "学英语听新闻",
+  "short_name": "学英语听新闻",
+  "version": "info.jfox.learnapp",
+  "description": "A Learning English App",
+  "icons": [],
+  "start_url": "index.html"
+}

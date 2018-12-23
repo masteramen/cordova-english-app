@@ -1,0 +1,36 @@
+{
+    "version": "1.0",
+    "name": "config",
+    "admob": {
+      "ios": {
+        "interstitial": "ca-app-pub-9477174171188196/4534780651",
+        "banner": "ca-app-pub-9477174171188196/3994804736",
+        "reward": "ca-app-pub-9477174171188196/1480353851"
+      }
+    },
+    "rss": {
+      "item": [
+        {
+          "title": "VOA News",
+          "alias": "VOA News",
+          "link": "http://feed43.com/6302168535022045.xml",
+          "description": "Listening to VOA News",
+          "type": "audio"
+        },
+        {
+          "title": "BBC News",
+          "alias": "BBC News",
+          "link": "http://feed43.com/8753402584161724.xml",
+          "description": "Listening to BBC News",
+          "type": "audio"
+        },
+        {
+          "title": "VOA Special English",
+          "alias": "VOA",
+          "link": "http://feed43.com/6328442887276205.xml",
+          "description": "Listening to VOA Special English",
+          "type": "audio"
+        }
+      ]
+    }
+  }

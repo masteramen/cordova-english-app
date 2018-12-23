@@ -207,12 +207,12 @@ public extension AVPlayerViewController {
         
     }
      @objc
-     func addSubtitless(file string: String)-> Self  {
+     func addSubtitless(file subtitleURL: URL)-> Self  {
         
         // Create label
         addSubtitleLabel()
         let subtitleFile = Bundle.main.path(forResource: "trailer_720p", ofType: "srt")
-        let subtitleURL = URL(fileURLWithPath: subtitleFile!)
+       // let subtitleURL = URL(fileURLWithPath: subtitleFile!)
         
         open(file:subtitleURL,encoding:String.Encoding.utf8)
         return self
@@ -239,7 +239,14 @@ public extension AVPlayerViewController {
                 
                 guard let strongSelf = self else { return }
                 guard let label = strongSelf.subtitleLabel else { return }
+                //
+                //label.font = label.font.withSize(label.bounds.width * 0.045)
                 
+                //let size = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) * 0.1
+                let size = min((UIScreen.screens.last?.bounds.width)!, (UIScreen.screens.last?.bounds.height)!) * 0.04
+                
+                label.font = label.font.withSize(size)
+                //print(size)
                 // Search && show subtitles
                 label.text = Subtitles.searchSubtitles(strongSelf.parsedPayload, time.seconds)
                 

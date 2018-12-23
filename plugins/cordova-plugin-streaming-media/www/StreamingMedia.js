@@ -27,6 +27,10 @@ StreamingMedia.prototype.playVideo = function (url, options) {
 	cordova.exec(options.successCallback || null, options.errorCallback || null, "StreamingMedia", "playVideo", [url, options]);
 };
 
+StreamingMedia.prototype.addSrt = function (url, options) {
+options = options || {};
+cordova.exec(options.successCallback || null, options.errorCallback || null, "StreamingMedia", "addSrt", [url, options]);
+};
 
 StreamingMedia.install = function () {
 	if (!window.plugins) {
